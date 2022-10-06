@@ -58,8 +58,11 @@ bool period (string s)
 
 // ** Update the tokentype to be WORD1, WORD2, PERIOD, ERROR, EOFM, etc.
 enum tokentype {VERB, VERBNEG, VERBPAST, VERBPASTNEG, IS, WAS,
-OBJECT, SUBJECT, DESTINATION, PRONOUN, CONNECTOR
-WORD1, WORD2, PERIOD, ERROR, EOFM};
+OBJECT, SUBJECT, DESTINATION,
+PRONOUN, PRONOUN, PRONOUN, PRONOUN, PRONOUN,
+CONNECTOR, CONNECTOR, CONNECTOR, CONNECTOR,
+WORD1, WORD2, PERIOD, ERROR,
+EOFM};
 
 // ** For the display names of tokens - must be in the same order as the tokentype.
 string tokenName[30] = {
