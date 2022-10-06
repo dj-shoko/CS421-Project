@@ -118,41 +118,43 @@ int scanner(tokentype& tt, string& w)
     //Reserved List Check
     bool resCheck = false;
     for (int i = 0; i < 19; i++) {
-	    if (w == reservedwords[i]) {
+      if (w == reservedwords[i]) {
         //If it is a reserved word, match the type
         switch (i) {
-          case 0: //If the word is "masu"
+          case 0: //If the word is "masu", return type as "VERB"
             the_type = VERB;
             break;
-          case 1: //If the word is "masen"
+          case 1: //If the word is "masen", return type as "VERBNEG"
             the_type = VERBNEG;
             break;
-          case 2: //If the word is "mashita"
+          case 2: //If the word is "mashita", return type as "VERBPAST"
             the_type = VERBPAST;
             break;
-          case 3: //If the word is "masendeshita"
+          case 3: //If the word is "masendeshita", return type as "VERBPASTNEG"
             the_type = VERBPASTNEG;
             break;
-          case 4: //If the word is "desu"
+          case 4: //If the word is "desu", return type as "IS"
             the_type = IS;
             break;
-          case 5: //If the word is "deshita"
+          case 5: //If the word is "deshita", return type as "WAS"
             the_type = WAS;
             break;
-          case 6: //If the word is "o"
+          case 6: //If the word is "o", return type as "OBJECT"
             the_type = OBJECT;
             break;
-          case 7: //If the word is "wa"
+          case 7: //If the word is "wa", return type as "SUBJECT"
             the_type = SUBJECT;
             break;
-          case 8: //If the word is "ni"
+          case 8: //If the word is "ni", return type as "DESTINATION"
             the_type = DESTINATION;
             break;
-          //If the word is "watashi", "anata", "kare", "kanojo", or "sore"
+          //If the word is "watashi", "anata", "kare", "kanojo", or "sore",
+          //return type as "PRONOUN"
           case 9: case 10: case 11: case 12: case 13:
             the_type = PRONOUN;
             break;
-          //If the word is "mata", "soshite", "shikashi", or "dakara"
+          //If the word is "mata", "soshite", "shikashi", or "dakara",
+          //return type as "CONNECTOR
           case 14: case 15: case 16: case 17:
             the_type = CONNECTOR;
             break;
@@ -165,7 +167,7 @@ int scanner(tokentype& tt, string& w)
         }
         //Since it is a reserved word, mark it as one
         resCheck = true;
-        break; //Break out of the loop
+        break;
       }
     }
 	  
