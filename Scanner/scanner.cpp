@@ -34,7 +34,6 @@ bool word (string s)
 	  return(false);
       charpos++;
     }//end of while
-
   // where did I end up????
   if (state == 2) return(true);  // end in a final state
    else return(false);
@@ -91,9 +90,7 @@ ifstream fin;  // global stream for reading from the input file
 // Gives back the token type and the word itself
 // ** Done by: Raymond Quach
 int scanner(tokentype& tt, string& w)
-{
-
-  // ** Grab the next word from the file via fin
+{ // ** Grab the next word from the file via fin
   fin >> w;
   int finalChar = w.length() - 1; //Final character of the string
 
@@ -112,11 +109,16 @@ int scanner(tokentype& tt, string& w)
      decided based on the last character.
      4. Return the token type & string  (pass by reference)
   */
+
+  //Call word function and if it is a word,
+  //then check if it is a reserved word.
+  //If it is then return the type,
+  //else return if it is WORD1 or WORD2.
   if (word(w)) {
     //Reserved List Check
     bool resCheck = false;
     for (int i = 0; i < 19; i++) {
-	if (w == reservedwords[i]) {
+	    if (w == reservedwords[i]) {
         //If it is a reserved word, match the type
         switch (i) {
           case 0: //If the word is "masu"
@@ -178,9 +180,12 @@ int scanner(tokentype& tt, string& w)
         the_type = WORD2;
     }
   }
-  else if (period(w)) //Check if it is a period
+
+  //Check if it is a period, if it is then mark it as such
+  else if (period(w)) 
     the_type = PERIOD;
-  else //If it is not a word or period, then it is an error
+  
+  else //If it is neither a word nor a period, then it is an error
     the_type = ERROR;
 }//the end of scanner
 
