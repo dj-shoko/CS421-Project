@@ -317,7 +317,7 @@ int scanner(tokentype& tt, string& w)
     if (!resCheck) {
       //WORD1 scenario
       if (w[finalChar] == 'a' || w[finalChar] == 'e' || w[finalChar] == 'i' ||
-      w[finalChar] == 'o' || w[finalChar] == 'u')
+      w[finalChar] == 'o' || w[finalChar] == 'u' || w[finalChar] == 'n')
         tt = WORD1;
       //WORD2 scenario
       else if (w[finalChar] == 'E' || w[finalChar] == 'I')
@@ -357,8 +357,12 @@ int main()
                                    // the arguments  
        if (theword == "eofm") break;  // stop now
 
-       cout << "Type is:" << tokenName[thetype] << endl;
-       cout << "Word is:" << theword << endl;   
+       //cout << "Type is:" << tokenName[thetype] << endl;
+       //cout << "Word is:" << theword << endl;   
+
+       if (tokenName[thetype] == "ERROR")
+        cout << "Lexical error: " << theword << " is not a valid token" << endl;
+       cout << "\"" << theword << "\" is token type " << tokenName[thetype] << endl << endl;
     }
 
    cout << "End of file is encountered." << endl;
