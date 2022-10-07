@@ -357,12 +357,8 @@ int main()
                                    // the arguments  
        if (theword == "eofm") break;  // stop now
 
-       //cout << "Type is:" << tokenName[thetype] << endl;
-       //cout << "Word is:" << theword << endl;   
-
-       if (tokenName[thetype] == "ERROR")
-        cout << "Lexical error: " << theword << " is not a valid token" << endl;
-       cout << "\"" << theword << "\" is token type " << tokenName[thetype] << endl << endl;
+       cout << "Type is:" << tokenName[thetype] << endl;
+       cout << "Word is:" << theword << endl;   
     }
 
    cout << "End of file is encountered." << endl;
