@@ -174,11 +174,11 @@ int scanner(tokentype& tt, string& w)
     //If the word is none of the reserved words, then it should be WORD1 or WORD2
     if (!resCheck) {
       //WORD1 scenario
-      if (w[finalChar] == "a" || w[finalChar] == "e" || w[finalChar] == "i" ||
-      w[finalChar] == "o" || w[finalChar] == "u")
+      if (w[finalChar] == 'a' || w[finalChar] == 'e' || w[finalChar] == 'i' ||
+      w[finalChar] == 'o' || w[finalChar] == 'u')
         the_type = WORD1;
       //WORD2 scenario
-      else if (w[finalChar] == "E" || w[finalChar] == "I")
+      else if (w[finalChar] == 'E' || w[finalChar] == 'I')
         the_type = WORD2;
     }
   }
