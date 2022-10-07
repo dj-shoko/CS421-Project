@@ -86,7 +86,7 @@ bool word (string s)
 
       //Is it a vowel followed up by an n
       else if (state == 1 && s[charpos] == 'n')
-        state = 7;
+        state = 1;
       //End of state 1 Block
 
 
@@ -134,38 +134,6 @@ bool word (string s)
       tolower(s[charpos]) == 'i' || s[charpos] == 'o' || s[charpos] == 'u'))
         state = 1;
       //End of state 6 Block
-
-
-
-      //State 7 Block (Vowel followed up by 'n')
-      //Check if it is a vowel state
-      else if (state == 7 && (s[charpos] == 'a' || tolower(s[charpos]) == 'e' ||
-      tolower(s[charpos]) == 'i' || s[charpos] == 'o' || s[charpos] == 'u'))
-        state = 1;
-      
-      //Consanant check, non-pair state
-      else if (state == 7 && (s[charpos] == 'd' || s[charpos] == 'j' ||
-      s[charpos] == 'w' || s[charpos] == 'y' || s[charpos] == 'z'))
-        state = 2;
-
-      //Consanant check, pair allowed state
-      else if (state == 7 && (s[charpos] == 'b' || s[charpos] == 'g' ||
-      s[charpos] == 'h' || s[charpos] == 'k' || s[charpos] == 'm' ||
-      s[charpos] == 'n' || s[charpos] == 'p' || s[charpos] == 'r'))
-        state = 3;
-
-      //Special consanant in case of "ch" state
-      else if (state == 7 && s[charpos] == 'c')
-        state = 4;
-      
-      //Consanant 's' case this is a consonant pair state
-      else if (state == 7 && s[charpos] == 's')
-        state = 5;
-        
-      //Consanant 't' case this is a consonant pair state
-      else if (state == 7 && s[charpos] == 't')
-        state = 6;
-      //End of state 7 Block
       else {
         //Debugging
         //if (s != ".")
@@ -176,7 +144,7 @@ bool word (string s)
     }
 
   // where did I end up????
-  if (state == 1 || state == 7) return(true);  // end in a final state
+  if (state == 1) return(true);  // end in a final state
    else return(false);
 }
 
@@ -258,7 +226,7 @@ int scanner(tokentype& tt, string& w)
   //else return if it is WORD1 or WORD2.
   if (word(w)) {
     //Reserved List Check
-    bool resCheck = false;
+    bool resCheck = false; //Variable to determine if it is a reserved word or not
     for (int i = 0; i < 19; i++) {
       if (w == reservedwords[i]) {
         //If it is a reserved word, match the type
