@@ -12,42 +12,183 @@ using namespace std;
 // --------- Two DFAs ---------------------------------
 
 // WORD DFA 
-// Done by: 
+// Done by: Raymond Quach
 // RE:   **
 
 bool word (string s)
 {
   int state = 0;
   int charpos = 0;
-  /* replace the following todo the word dfa  **
+
+  //Currently hardcoded/placeholder, based on NFA diagram
   while (s[charpos] != '\0') 
     {
-      if (state == 0 && s[charpos] == 'a')
-      state = 1;
-      else
-      if (state == 1 && s[charpos] == 'b')
-      state = 2;
-      else
-      if (state == 2 && s[charpos] == 'b')
-      state = 2;
-      else
-	  return(false);
+      //State 0 block
+      //Check if it is a vowel state
+      if (state == 0 && (s[charpos] == 'a' || tolower(s[charpos]) == 'e' ||
+      tolower(s[charpos]) == 'i' || s[charpos] == 'o' || s[charpos] == 'u'))
+        state = 1;
+      
+      //Consanant check, non-pair state
+      else if (state == 0 && (s[charpos] == 'd' || s[charpos] == 'j' ||
+      s[charpos] == 'w' || s[charpos] == 'y' || s[charpos] == 'z'))
+        state = 2;
+
+      //Consanant check, pair allowed state
+      else if (state == 0 && (s[charpos] == 'b' || s[charpos] == 'g' ||
+      s[charpos] == 'h' || s[charpos] == 'k' || s[charpos] == 'm' ||
+      s[charpos] == 'n' || s[charpos] == 'p' || s[charpos] == 'r'))
+        state = 3;
+
+      //Special consanant in case of "ch" state
+      else if (state == 0 && s[charpos] == 'c')
+        state = 4;
+      
+      //Consanant 's' case this is a consonant pair state
+      else if (state == 0 && s[charpos] == 's')
+        state = 5;
+        
+      //Consanant 't' case this is a consonant pair state
+      else if (state == 0 && s[charpos] == 't')
+        state = 6;
+      //End of state 0 block
+
+
+
+      //State 1 Block
+      //Check if it is a vowel state
+      else if (state == 1 && (s[charpos] == 'a' || tolower(s[charpos]) == 'e' ||
+      tolower(s[charpos]) == 'i' || s[charpos] == 'o' || s[charpos] == 'u'))
+        state = 1;
+      
+      //Consanant check, non-pair state
+      else if (state == 1 && (s[charpos] == 'd' || s[charpos] == 'j' ||
+      s[charpos] == 'w' || s[charpos] == 'y' || s[charpos] == 'z'))
+        state = 2;
+
+      //Consanant check, pair allowed state
+      else if (state == 1 && (s[charpos] == 'b' || s[charpos] == 'g' ||
+      s[charpos] == 'h' || s[charpos] == 'k' || s[charpos] == 'm' ||
+      s[charpos] == 'p' || s[charpos] == 'r'))
+        state = 3;
+
+      //Special consanant in case of "ch" state
+      else if (state == 1 && s[charpos] == 'c')
+        state = 4;
+      
+      //Consanant 's' case this is a consonant pair state
+      else if (state == 1 && s[charpos] == 's')
+        state = 5;
+        
+      //Consanant 't' case this is a consonant pair state
+      else if (state == 1 && s[charpos] == 't')
+        state = 6;
+
+      //Is it a vowel followed up by an n
+      else if (state == 1 && s[charpos] == 'n')
+        state = 7;
+      //End of state 1 Block
+
+
+
+      //State 2 Block (Consonant Scenarios or consonant pairs if they are such)
+      //Check if it is a vowel
+      else if (state == 2 && (s[charpos] == 'a' || tolower(s[charpos]) == 'e' ||
+      tolower(s[charpos]) == 'i' || s[charpos] == 'o' || s[charpos] == 'u'))
+        state = 1;
+      //End of state 2 Block
+    
+
+
+      //State 3 Block (Consonants that can be pairs)
+      else if (state == 3 && s[charpos] == 'y')
+        state = 2;
+      else if (state == 3 && (s[charpos] == 'a' || tolower(s[charpos]) == 'e' ||
+      tolower(s[charpos]) == 'i' || s[charpos] == 'o' || s[charpos] == 'u'))
+        state = 1;
+      //End of state 3 Block
+
+
+
+      //State 4 Block (char 'c')
+      else if (state == 4 && s[charpos] == 'h')
+        state = 2;
+      //End of state 4 Block
+
+
+
+      //State 5 Block (char 's')
+      else if (state == 5 && s[charpos] == 'h')
+        state = 2;
+      else if (state == 5 && (s[charpos] == 'a' || tolower(s[charpos]) == 'e' ||
+      tolower(s[charpos]) == 'i' || s[charpos] == 'o' || s[charpos] == 'u'))
+        state = 1;
+      //End of state 5 Block
+
+
+
+      //State 6 Block (char 't')
+      else if (state == 6 && s[charpos] == 's')
+        state = 2;
+      else if (state == 6 && (s[charpos] == 'a' || tolower(s[charpos]) == 'e' ||
+      tolower(s[charpos]) == 'i' || s[charpos] == 'o' || s[charpos] == 'u'))
+        state = 1;
+      //End of state 6 Block
+
+
+
+      //State 7 Block (Vowel followed up by 'n')
+      //Check if it is a vowel state
+      else if (state == 7 && (s[charpos] == 'a' || tolower(s[charpos]) == 'e' ||
+      tolower(s[charpos]) == 'i' || s[charpos] == 'o' || s[charpos] == 'u'))
+        state = 1;
+      
+      //Consanant check, non-pair state
+      else if (state == 7 && (s[charpos] == 'd' || s[charpos] == 'j' ||
+      s[charpos] == 'w' || s[charpos] == 'y' || s[charpos] == 'z'))
+        state = 2;
+
+      //Consanant check, pair allowed state
+      else if (state == 7 && (s[charpos] == 'b' || s[charpos] == 'g' ||
+      s[charpos] == 'h' || s[charpos] == 'k' || s[charpos] == 'm' ||
+      s[charpos] == 'n' || s[charpos] == 'p' || s[charpos] == 'r'))
+        state = 3;
+
+      //Special consanant in case of "ch" state
+      else if (state == 7 && s[charpos] == 'c')
+        state = 4;
+      
+      //Consanant 's' case this is a consonant pair state
+      else if (state == 7 && s[charpos] == 's')
+        state = 5;
+        
+      //Consanant 't' case this is a consonant pair state
+      else if (state == 7 && s[charpos] == 't')
+        state = 6;
+      //End of state 7 Block
+      else {
+        //Debugging
+        //if (s != ".")
+        //  cout << "DEBUG:\nString: " << s << ", Char: " << s[charpos] << charpos << endl;
+	      return(false);
+      }
       charpos++;
-    }//end of while
+    }
+
   // where did I end up????
-  if (state == 2) return(true);  // end in a final state
+  if (state == 1 || state == 7) return(true);  // end in a final state
    else return(false);
-  */
 }
 
 // PERIOD DFA 
 // Done by: Raymond Quach
 bool period (string s)
-{  // complete this **
+{
+  // complete this **
   //If the string is a period, return true
   if (s == ".")
     return true;
-  else
+  else //If the string is not a period, return false
     return false;
 }
 
@@ -90,7 +231,8 @@ ifstream fin;  // global stream for reading from the input file
 // Gives back the token type and the word itself
 // ** Done by: Raymond Quach
 int scanner(tokentype& tt, string& w)
-{ // ** Grab the next word from the file via fin
+{ 
+  // ** Grab the next word from the file via fin
   fin >> w;
   int finalChar = w.length() - 1; //Final character of the string
 
@@ -122,47 +264,47 @@ int scanner(tokentype& tt, string& w)
         //If it is a reserved word, match the type
         switch (i) {
           case 0: //If the word is "masu", return type as "VERB"
-            the_type = VERB;
+            tt = VERB;
             break;
           case 1: //If the word is "masen", return type as "VERBNEG"
-            the_type = VERBNEG;
+            tt = VERBNEG;
             break;
           case 2: //If the word is "mashita", return type as "VERBPAST"
-            the_type = VERBPAST;
+            tt = VERBPAST;
             break;
           case 3: //If the word is "masendeshita", return type as "VERBPASTNEG"
-            the_type = VERBPASTNEG;
+            tt = VERBPASTNEG;
             break;
           case 4: //If the word is "desu", return type as "IS"
-            the_type = IS;
+            tt = IS;
             break;
           case 5: //If the word is "deshita", return type as "WAS"
-            the_type = WAS;
+            tt = WAS;
             break;
           case 6: //If the word is "o", return type as "OBJECT"
-            the_type = OBJECT;
+            tt = OBJECT;
             break;
           case 7: //If the word is "wa", return type as "SUBJECT"
-            the_type = SUBJECT;
+            tt = SUBJECT;
             break;
           case 8: //If the word is "ni", return type as "DESTINATION"
-            the_type = DESTINATION;
+            tt = DESTINATION;
             break;
           //If the word is "watashi", "anata", "kare", "kanojo", or "sore",
           //return type as "PRONOUN"
           case 9: case 10: case 11: case 12: case 13:
-            the_type = PRONOUN;
+            tt = PRONOUN;
             break;
           //If the word is "mata", "soshite", "shikashi", or "dakara",
           //return type as "CONNECTOR
           case 14: case 15: case 16: case 17:
-            the_type = CONNECTOR;
+            tt = CONNECTOR;
             break;
           case 18: //This should never happen...
-            the_type = EOFM;
+            tt = EOFM;
             break;
           default: //I sure as hell hope this never happens...
-            the_type = ERROR;
+            tt = ERROR;
             break;
         }
         //Since it is a reserved word, mark it as one
@@ -176,19 +318,19 @@ int scanner(tokentype& tt, string& w)
       //WORD1 scenario
       if (w[finalChar] == 'a' || w[finalChar] == 'e' || w[finalChar] == 'i' ||
       w[finalChar] == 'o' || w[finalChar] == 'u')
-        the_type = WORD1;
+        tt = WORD1;
       //WORD2 scenario
       else if (w[finalChar] == 'E' || w[finalChar] == 'I')
-        the_type = WORD2;
+        tt = WORD2;
     }
   }
 
   //Check if it is a period, if it is then mark it as such
   else if (period(w)) 
-    the_type = PERIOD;
+    tt = PERIOD;
   
   else //If it is neither a word nor a period, then it is an error
-    the_type = ERROR;
+    tt = ERROR;
 }//the end of scanner
 
 
