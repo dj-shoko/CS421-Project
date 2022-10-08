@@ -54,8 +54,7 @@ bool word (string s)
       //End of state 0 block
 
 
-
-      //State 1 Block
+      //State 1 block
       //Check if it is a vowel state
       else if (state == 1 && (s[charpos] == 'a' || tolower(s[charpos]) == 'e' ||
       tolower(s[charpos]) == 'i' || s[charpos] == 'o' || s[charpos] == 'u'))
@@ -87,53 +86,22 @@ bool word (string s)
       //Is it a vowel followed up by an n
       else if (state == 1 && s[charpos] == 'n')
         state = 1;
-      //End of state 1 Block
 
+      //Consonant Pair State Block
+      else if (state == 3 && s[charpos] == 'y' ||
+      (state == 4 || state == 5) && s[charpos] == 'h' ||
+      state == 6 && s[charpos] == 's')
+        state = 2;
+      //End of state 1 block
 
-
-      //State 2 Block (Consonant Scenarios or consonant pairs if they are such)
-      //Check if it is a vowel
-      else if (state == 2 && (s[charpos] == 'a' || tolower(s[charpos]) == 'e' ||
+      //State 2 block
+      //Is any consonant followed up by a vowel?
+      else if ((state == 2 || state == 3 || state == 4 || state == 5 || state == 6) &&
+      (s[charpos] == 'a' || tolower(s[charpos]) == 'e' ||
       tolower(s[charpos]) == 'i' || s[charpos] == 'o' || s[charpos] == 'u'))
         state = 1;
-      //End of state 2 Block
-    
+      //End of state 2 block
 
-
-      //State 3 Block (Consonants that can be pairs)
-      else if (state == 3 && s[charpos] == 'y')
-        state = 2;
-      else if (state == 3 && (s[charpos] == 'a' || tolower(s[charpos]) == 'e' ||
-      tolower(s[charpos]) == 'i' || s[charpos] == 'o' || s[charpos] == 'u'))
-        state = 1;
-      //End of state 3 Block
-
-
-
-      //State 4 Block (char 'c')
-      else if (state == 4 && s[charpos] == 'h')
-        state = 2;
-      //End of state 4 Block
-
-
-
-      //State 5 Block (char 's')
-      else if (state == 5 && s[charpos] == 'h')
-        state = 2;
-      else if (state == 5 && (s[charpos] == 'a' || tolower(s[charpos]) == 'e' ||
-      tolower(s[charpos]) == 'i' || s[charpos] == 'o' || s[charpos] == 'u'))
-        state = 1;
-      //End of state 5 Block
-
-
-
-      //State 6 Block (char 't')
-      else if (state == 6 && s[charpos] == 's')
-        state = 2;
-      else if (state == 6 && (s[charpos] == 'a' || tolower(s[charpos]) == 'e' ||
-      tolower(s[charpos]) == 'i' || s[charpos] == 'o' || s[charpos] == 'u'))
-        state = 1;
-      //End of state 6 Block
       else {
         //Debugging
         //if (s != ".")
