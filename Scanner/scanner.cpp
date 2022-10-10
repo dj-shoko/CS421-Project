@@ -87,8 +87,12 @@ bool word (string s)
         state = 6;
 
       // Is it a vowel followed up by an n
-      else if (state == 1 && s[charpos] == 'n' && s[charpos-1] != 'n')
-        state = 1;
+      else if (state == 1 && s[charpos] == 'n') {
+        if (s[charpos-1] != 'n') // If it is a vowel+'n'
+          state = 1;
+        else // If it was previously a vowel+'n' followed up by another 'n'
+          state = 3;
+      }
 
       // Consonant Pair State Block
       else if (state == 3 && s[charpos] == 'y' ||
