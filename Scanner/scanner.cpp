@@ -19,104 +19,99 @@ using namespace std;
 
 bool word (string s)
 {
-  int state = 0; // Initialize the state as 0 as the starting state
+  char state = 0; // Initialize the state as 0 as the starting state
   int charpos = 0; // Initialize the character position as the first letter in string
 
   // Loop to go through each letter in the string
   while (s[charpos] != '\0')
     {
+      char c = s[charpos]; // Current character in the string s
+
       // State 0 block
       // Check if it is a vowel state
-      if (state == 0 && (s[charpos] == 'a' || tolower(s[charpos]) == 'e' ||
-      tolower(s[charpos]) == 'i' || s[charpos] == 'o' || s[charpos] == 'u'))
+      if (state == 0 && (c == 'a' || tolower(c) == 'e' ||
+      tolower(c) == 'i' || c == 'o' || c == 'u'))
         state = 1;
 
       // Consanant check, non-pair state
-      else if (state == 0 && (s[charpos] == 'd' || s[charpos] == 'j' ||
-      s[charpos] == 'w' || s[charpos] == 'y' || s[charpos] == 'z'))
-        state = 2;
+      else if (state == 0 && (c == 'd' || c == 'j' ||
+      c == 'w' || c == 'y' || c == 'z'))
+        state = 'a';
 
       // Consanant check, pair allowed state
-      else if (state == 0 && (s[charpos] == 'b' || s[charpos] == 'g' ||
-      s[charpos] == 'h' || s[charpos] == 'k' || s[charpos] == 'm' ||
-      s[charpos] == 'n' || s[charpos] == 'p' || s[charpos] == 'r'))
-        state = 3;
+      else if (state == 0 && (c == 'b' || c == 'g' || c == 'h' || c == 'k'
+      || c == 'm' || c == 'n' || c == 'p' || c == 'r'))
+        state = 'y';
 
       // Special consanant in case of "ch" state
-      else if (state == 0 && s[charpos] == 'c')
-        state = 4;
+      else if (state == 0 && c == 'c')
+        state = 'c';
 
       // Consanant 's' case this is a consonant pair state
-      else if (state == 0 && s[charpos] == 's')
-        state = 5;
+      else if (state == 0 && c == 's')
+        state = 's';
 
       // Consanant 't' case this is a consonant pair state
-      else if (state == 0 && s[charpos] == 't')
-        state = 6;
+      else if (state == 0 && c == 't')
+        state = 't';
       // End of state 0 block
 
 
 
-      // State 1 block
       // Check if it is a vowel state
-      else if (state == 1 && (s[charpos] == 'a' || tolower(s[charpos]) == 'e' ||
-      tolower(s[charpos]) == 'i' || s[charpos] == 'o' || s[charpos] == 'u'))
+      else if (state == 1 && (c == 'a' || tolower(c) == 'e' ||
+      tolower(c) == 'i' || c == 'o' || c == 'u'))
         state = 1;
 
-      // Consanant check, non-pair state (qsa)
-      else if (state == 1 && (s[charpos] == 'd' || s[charpos] == 'j' ||
-      s[charpos] == 'w' || s[charpos] == 'y' || s[charpos] == 'z'))
-        state = 2;
-
-      // Consanant check, pair allowed state
-      else if (state == 1 && (s[charpos] == 'b' || s[charpos] == 'g' ||
-      s[charpos] == 'h' || s[charpos] == 'k' || s[charpos] == 'm' ||
-      s[charpos] == 'p' || s[charpos] == 'r'))
-        state = 3;
-
-      // Special consanant in case of "ch" state
-      else if (state == 1 && s[charpos] == 'c')
-        state = 4;
-
-      // Consanant 's' case this is a consonant pair state
-      else if (state == 1 && s[charpos] == 's')
-        state = 5;
-
-      // Consanant 't' case this is a consonant pair state
-      else if (state == 1 && s[charpos] == 't')
-        state = 6;
+      //Is any consonant followed up by a vowel? (qsa)
+      else if ((state == 'a' || state == 'y' || state == 's' || state == 't') &&
+      (c == 'a' || tolower(c) == 'e' || tolower(c) == 'i' || c == 'o' || c == 'u'))
+        state = 1;
 
       // Is it a vowel followed up by an n
       else if (state == 1 && s[charpos] == 'n') {
-        if (s[charpos-1] != 'n') // If it is a vowel+'n'
+        if (s[charpos-1] != 'n') // If it is a vowel+'n' (state 1)
           state = 1;
-        else // If it was previously a vowel+'n' followed up by another 'n'
-          state = 3;
+        else // If it was previously a vowel+'n' followed up by another 'n' (qy)
+          state = 'y';
       }
 
-      // Consonant Pair State Block
-      else if (state == 3 && s[charpos] == 'y' ||
-      (state == 4 || state == 5) && s[charpos] == 'h' ||
-      state == 6 && s[charpos] == 's')
-        state = 2;
-      // End of state 1 block
 
 
+      // Consanant check, pair allowed state
+      else if (state == 1 && (c == 'b' || c == 'g' || c == 'h' ||
+      c == 'k' || c == 'm' || c == 'p' || c == 'r'))
+        state = 'y';
 
-      // State 2 block
-      //Is any consonant followed up by a vowel?
-      else if ((state == 2 || state == 3 || state == 4 || state == 5 || state == 6) &&
-      (s[charpos] == 'a' || tolower(s[charpos]) == 'e' ||
-      tolower(s[charpos]) == 'i' || s[charpos] == 'o' || s[charpos] == 'u'))
-        state = 1;
-      // End of state 2 block
+      // Special consanant in case of "ch" state
+      else if (state == 1 && c == 'c')
+        state = 'c';
+
+      // Consonant Pair State Block (qy, qc, qs, and qt)
+      else if (state == 'y' && c == 'y' || // bghkmnpr + 'y' pair
+      ((state == 'c' || state == 's') && c == 'h') || // 'c' + 'h' and 's' + 'h' pair
+      (state == 't' && c == 's')) // 't' + 's' pair
+        state = 'a';
+
+      // Consanant check, non-pair state (qsa)
+      else if (state == 1 && (c == 'd' || c == 'j' ||
+      c == 'w' || c == 'y' || c == 'z'))
+        state = 'a';
+
+      // Consanant 's' case this is a consonant pair state
+      else if (state == 1 && c == 's')
+        state = 's';
+
+      // Consanant 't' case this is a consonant pair state
+      else if (state == 1 && c == 't')
+        state = 't';
 
 
 
       else {
         // Debugging
         // if (s != ".")
-        //  cout << "DEBUG:\n\tString: " << s << ", Char: " << s[charpos] << charpos << endl;
+        //  cout << "DEBUG:\n\tString: " << s << ", Char: " << c << charpos << endl;
 	      return(false);
       }
       charpos++;
