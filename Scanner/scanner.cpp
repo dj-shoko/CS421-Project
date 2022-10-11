@@ -275,6 +275,8 @@ int scanner(tokentype& tt, string& w)
 
   else // If it is neither a word nor a period, then it is an error
     tt = ERROR;
+
+  return 0; // Stop giving me compile warnings >:(
 } //the end of scanner
 
 
