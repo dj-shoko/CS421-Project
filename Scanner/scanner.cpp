@@ -126,6 +126,8 @@ bool word (string s)
 
 // PERIOD DFA
 // Done by: Raymond Quach
+// RE:   .
+
 bool period (string s)
 {
   // complete this **
@@ -142,17 +144,18 @@ bool period (string s)
 
 // Table for the token type.
 enum tokentype {
-VERB, VERBNEG, VERBPAST, VERBPASTNEG, IS, WAS,
-OBJECT, SUBJECT, DESTINATION, PRONOUN, CONNECTOR,
-WORD1, WORD2, PERIOD, ERROR,
-EOFM};
+  VERB, VERBNEG, VERBPAST, VERBPASTNEG, IS, WAS,
+  OBJECT, SUBJECT, DESTINATION, PRONOUN, CONNECTOR,
+  WORD1, WORD2, PERIOD, ERROR,
+  EOFM
+};
 
 // String table for the display names of tokens, same order as "tokentype" table
 string tokenName[30] = {
-"VERB", "VERBNEG", "VERBPAST", "VERBPASTNEG", "IS", "WAS",
-"OBJECT", "SUBJECT", "DESTINATION", "PRONOUN", "CONNECTOR",
-"WORD1", "WORD2", "PERIOD", "ERROR",
-"EOFM"
+  "VERB", "VERBNEG", "VERBPAST", "VERBPASTNEG", "IS", "WAS",
+  "OBJECT", "SUBJECT", "DESTINATION", "PRONOUN", "CONNECTOR",
+  "WORD1", "WORD2", "PERIOD", "ERROR",
+  "EOFM"
 };
 
 // ** Need the reservedwords table to be set up here.
@@ -199,8 +202,10 @@ int scanner(tokentype& tt, string& w)
     return 0;
 
   // Check if it is a period, return the type as period if it is.
-  else if (period(w))
+  else if (period(w)) {
     tt = PERIOD;
+    return 0;
+  }
 
   // Call word function and if it is a word
   // And if it is then check if it is a reserved word.
@@ -261,16 +266,13 @@ int scanner(tokentype& tt, string& w)
       }
     }
 
-    int finalChar = w.length() - 1; // Final character of the string
+    char finalChar = w[w.length() - 1]; // Final character of the string
 
-    // If the word is none of the reserved words, then it should be WORD1 or WORD2
-    // WORD1 scenario (if it ends with a lower case vowel or vowel+'n')
-    if (w[finalChar] == 'a' || w[finalChar] == 'e' || w[finalChar] == 'i' ||
-    w[finalChar] == 'o' || w[finalChar] == 'u' || w[finalChar] == 'n')
-      tt = WORD1;
-    // WORD2 scenario (if it ends with an uppercase 'E' or 'I'
-    else if (w[finalChar] == 'E' || w[finalChar] == 'I')
+    if (finalChar == 'E' || finalChar == 'I') // Word 2 scenario
       tt = WORD2;
+    else // Word 1 scenario
+      tt = WORD1;
+    return 0;
   }
 
   else // If it is neither a word nor a period, then it is an error
@@ -291,8 +293,11 @@ int main()
   string theword;
   string filename;
 
-  cout << "Enter the input file name: ";
-  cin >> filename;
+  //cout << "Enter the input file name: ";
+  //cin >> filename;
+
+  cout << "Input file name: ";
+  cin >> filename; cout << "\n";
 
   fin.open(filename.c_str());
 
@@ -303,10 +308,17 @@ int main()
                                    // the arguments
        if (theword == "eofm") break;  // stop now
 
-       cout << "Type is:" << tokenName[thetype] << endl;
-       cout << "Word is:" << theword << endl;
+       //Uncomment the two lines below and delete this line in final version
+       //cout << "Type is:" << tokenName[thetype] << endl;
+       //cout << "Word is:" << theword << endl;
+
+       //Delete this block below after finish
+       if (tokenName[thetype] == "ERROR")
+        cout << "Lexical error: " << theword << " is not a valid token" << endl;
+       cout << "\"" << theword << "\" is token type " << tokenName[thetype] << endl << endl;
+       //Delete this block above after finish
     }
 
-   cout << "End of file is encountered." << endl;
+   cout << "End of file is encountered.\n" << endl;
    fin.close();
 }// end
