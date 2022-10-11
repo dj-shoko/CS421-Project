@@ -196,6 +196,7 @@ int scanner(tokentype& tt, string& w)
 {
   // Grab the next word from the file via fin
   fin >> w;
+  cout << endl;
 
   // If the word is "eofm" then return right now.
   if (w == "eofm")
@@ -275,50 +276,35 @@ int scanner(tokentype& tt, string& w)
     return 0;
   }
 
-  else // If it is neither a word nor a period, then it is an error
+  else { // If it is neither a word nor a period, then it is an error
+    cout << "Lexical error: " << w << " is not a valid token" << endl;
     tt = ERROR;
+  }
 
   return 0; // Stop giving me compile warnings >:(
 } //the end of scanner
 
-
-
-// The temporary test driver to just call the scanner repeatedly
+// The temporary test driver to just call the scanner repeatedly  
 // This will go away after this assignment
-// DO NOT CHANGE THIS!!!!!!
+// DO NOT CHANGE THIS!!!!!! 
 // Done by:  Louis
 int main()
 {
   tokentype thetype;
-  string theword;
+  string theword; 
   string filename;
-
-  //cout << "Enter the input file name: ";
-  //cin >> filename;
-
-  cout << "Input file name: ";
-  cin >> filename; cout << "\n";
-
+  cout << "Enter the input file name: ";
+  cin >> filename;
   fin.open(filename.c_str());
-
   // the loop continues until eofm is returned.
    while (true)
     {
        scanner(thetype, theword);  // call the scanner which sets
-                                   // the arguments
+                                   // the arguments  
        if (theword == "eofm") break;  // stop now
-
-       //Uncomment the two lines below and delete this line in final version
-       //cout << "Type is:" << tokenName[thetype] << endl;
-       //cout << "Word is:" << theword << endl;
-
-       //Delete this block below after finish
-       if (tokenName[thetype] == "ERROR")
-        cout << "Lexical error: " << theword << " is not a valid token" << endl;
-       cout << "\"" << theword << "\" is token type " << tokenName[thetype] << endl << endl;
-       //Delete this block above after finish
+       cout << "Type is:" << tokenName[thetype] << endl;
+       cout << "Word is:" << theword << endl;   
     }
-
-   cout << "End of file is encountered.\n" << endl;
+   cout << "End of file is encountered." << endl;
    fin.close();
 }// end
