@@ -160,12 +160,26 @@ string tokenName[30] = {
 // ** a.out should work without any additional files.
 
 // String table for reserved words
-string reservedwords[30] = {
-  "masu", "masen", "mashita", "masendeshita", "desu", "deshita", //Verbs
-  "o", "wa", "ni", //Particles
-  "watashi", "anata", "kare", "kanojo", "sore", //Pronouns
-  "mata", "soshite", "shikashi", "dakara", //Connector
-  "eofm" //End of File Marker
+string reservedwords[30][2] = {
+  {"masu", "VERB"},
+  {"masen", "VERBNEG"},
+  {"mashita", "VERBPAST"},
+  {"masendeshita", "VERBPASTNEG"},
+  {"desu", "IS"},
+  {"deshita", "WAS"},
+  {"o", "OBJECT"},
+  {"wa", "SUBJECT"},
+  {"ni", "DESTINATION"},
+  {"watashi", "PRONOUN"},
+  {"anata", "PRONOUN"},
+  {"kare", "PRONOUN"},
+  {"kanojo", "PRONOUN"},
+  {"sore", "PRONOUN"},
+  {"mata", "CONNECTOR"},
+  {"soshite", "CONNECTOR"},
+  {"shikashi", "CONNECTOR"},
+  {"dakara", "CONNECTOR"},
+  {"eofm", "EOFM"}
 };
 
 // ------------ Scanner and Driver -----------------------
@@ -195,7 +209,7 @@ int scanner(tokentype& tt, string& w)
   else if (word(w)) {
     //Reserved List Check
     for (int i = 0; i < 19; i++) {
-      if (w == reservedwords[i]) {
+      if (w == reservedwords[i][0]) {
         //If it is a reserved word, match the type
         switch (i) {
           case 0: //If the word is "masu", return type as "VERB"
