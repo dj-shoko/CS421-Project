@@ -305,6 +305,7 @@ int scanner(tokentype& tt, string& w)
 //    to display syntax error messages as specified by me.
 tokentype saved_token;
 string saved_lexeme;
+bool con = false;
 
 // Type of error: When the lexical does not match expected token name
 // Done By: Luis Zamora
@@ -333,7 +334,10 @@ void syntax_error2(string saved_lexeme, string parserFunct)
 // Done by: Raymond Quach
 tokentype next_token() {
   //Calls the scanner to retrieve token and lexeme
-  scanner(saved_token, saved_lexeme);
+  if (!con) {
+    scanner(saved_token, saved_lexeme);
+    con = true;
+  }
 
   //Returns the token value to global variable
   return saved_token;
@@ -343,12 +347,13 @@ tokentype next_token() {
 // Done by: Raymond Quach
 bool match(tokentype expected) {
   //Sends syntax error if token does not match expected
-  if (saved_token != expected)
+  if (next_token() != expected)
     syntax_error1(expected, saved_lexeme);
 
   //Sends message of matched token and return true
   else {
     cout << "Matched " << tokenName[expected] << endl;
+    con = false;
     return true;
   }
 }
@@ -366,7 +371,7 @@ void noun() {
   cout << "Processing <noun>" << endl;
   switch(next_token()) {
     case WORD1:
-      match(WORD1); //This already called next_token() right before so it's fine
+      match(WORD1);
       break;
     case PRONOUN:
       match(PRONOUN);
@@ -440,9 +445,6 @@ void after_object() {
       verb_tense();
       match(PERIOD);
       break;
-    case OBJECT:
-      match(OBJECT);
-      after_object();
     default: //Sends syntax error if unexpexted lexical found in parsing
       syntax_error2(saved_lexeme, "afterObject");
   }
@@ -465,6 +467,7 @@ void after_noun() {
     case OBJECT:
       match(OBJECT);
       after_object();
+      break;
     default: //Sends syntax error if unexpexted lexical found in parsing
       syntax_error2(saved_lexeme, "afterNoun");
   }
@@ -493,13 +496,10 @@ void s() {
   cout << "Processing <s>" << endl;
 
   //If the next token is a connector, match it
-  /*Need to find a way to prevent it from getting called immediately on
-  processing story() global bool variable maybe(?), delete this comment block after*/
   if (next_token() == CONNECTOR) 
     match(CONNECTOR);
   
   noun();
-  next_token(); //Pretty sure this is needed everywhere before a match() call
   match(SUBJECT);
   after_subject();
 }
@@ -509,7 +509,6 @@ void story() {
   cout << "Processing <story>\n\n";
 
   s(); //Proccesses <s>
-  bool first = false;
 
   //Loops s() next token is either a connector, word1, or pronoun
   while (1) {
