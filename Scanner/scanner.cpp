@@ -1,3 +1,5 @@
+
+
 #include<iostream>
 #include<fstream>
 #include<string>
@@ -14,8 +16,9 @@ using namespace std;
 // --------- Two DFAs ---------------------------------
 
 // WORD DFA
-// Done by: Raymond Quach
-// RE:   **
+// Done by: Raymond Quach, Arnold Bermejo, Luis Zamora
+/* RE: (vowel | vowel n | consonant vowel | consonant vowel n |
+consonant-pair vowel | consonant-pair vowel n)^+ */
 
 bool word (string s)
 {
