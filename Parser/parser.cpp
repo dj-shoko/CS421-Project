@@ -305,19 +305,19 @@ int scanner(tokentype& tt, string& w)
 token_type saved_token;
 string saved_lexeme
 
-/ Type of error: If the match fails
+/ Type of error: When the lexical does not match expected token name
 //Done By: Luis Zamora
 void syntax_error1(token_type expected, string saved_lexeme)
 {
-  cout<<"SYNTAX ERROR: expected "<< tokenName[expected]  << " but found "<<  saved_lexeme <<endl;
+  cout << "SYNTAX ERROR: expected " << tokenName[expected] << " but found " <<  saved_lexeme <<endl;
   exit (1); //halting
 }
 
-// Type of error: switch default
-//Done By:Luis Zamora
+// Type of error: When unexpected lexical dound in RDP parser functions
+//Done By: Luis Zamora
 void syntax_error2(string saved_lexeme, string parserFunct)
 {
-  cout<<"SYNTAX ERROR: unexpected "<< saved_lexeme << " found in "<< parserFunct <<endl;
+  cout << "SYNTAX ERROR: unexpected " << saved_lexeme << " found in " << parserFunct <<endl;
   exit (1); //halting
 }
 
@@ -327,20 +327,23 @@ void syntax_error2(string saved_lexeme, string parserFunct)
 // Purpose: Grabs the next token and update it in two variables
 // Done by: Raymond Quach
 token_type next_token() {
+   //Calls the scanner to retrieve token and lexeme
    scanner(saved_token, saved_lexeme);
 
+   //Returns the token value to global variable
    return saved_token;
 }
 
 // Purpose: Compares the saved token to the expected type and see if it matches
 // Done by: Raymond Quach
 boolean match(tokentype expected) {
-   if (saved_token != expected) {
-      syntax_error1();
-      return false;
-   }
+   //Sends syntax error if token does not match expected
+   if (saved_token != expected)
+      syntax_error1(expected, saved_lexeme);
+
+   //Sends message of matched token and return true
    else {
-      cout << "Matched " << saved_token << endl;
+      cout << "Matched " << saved_token[expected] << endl;
       return true;
    }
 
@@ -354,7 +357,7 @@ boolean match(tokentype expected) {
 
 // Done by: Raymond Quach (for all of below) 
 
-// Grammar: WORD1 | PRONOUN
+// Grammar: <noun> ::= WORD1 | PRONOUN
 void noun() {
    cout << "Processing <noun>" << endl;
    switch(next_token()) {
@@ -364,24 +367,24 @@ void noun() {
       case PRONOUN:
          match(PRONOUN);
          break;
-      default:
-         syntax_error2();
+      default: //Sends syntax error if unexpexted lexical found in parsing
+         syntax_error2(saved_lexeme, "noun");
    }
 }
 
-// Grammar: WORD2
+// Grammar: <verb> ::= WORD2
 void verb() {
    cout << "Processing <verb>" << endl;
    switch(next_token()) {
       case WORD2:
          match(WORD2);
          break;
-      default:
-         syntax_error2();
+      default: //Sends syntax error if unexpexted lexical found in parsing
+         syntax_error2(saved_lexeme, "verb");
    }
 }
 
-// Grammar: VERB | VERB NEGATIVE | VERB PAST | VERB PAST NEGATIVE
+// Grammar: <tense> ::= VERB | VERB NEGATIVE | VERB PAST | VERB PAST NEGATIVE
 void verb_tense() {
    cout << "Processing <tense>" << endl;
    switch(next_token()) {
@@ -397,12 +400,12 @@ void verb_tense() {
       case VERBPASTNEG:
          match(VERBPASTNEG);
          break;
-      default:
-         syntax_error2();
+      default: //Sends syntax error if unexpexted lexical found in parsing
+         syntax_error2(saved_lexeme, "tense");
    }
 }
 
-// Grammar: IS | WAS
+// Grammar: <be> ::= IS | WAS
 void be() {
    cout << "Processing <be>" << endl;
    switch(next_token()) {
@@ -412,12 +415,12 @@ void be() {
       case WAS:
          match(WAS);
          break;
-      default:
-         syntax_error2();
+      default: //Sends syntax error if unexpexted lexical found in parsing
+         syntax_error2(saved_lexeme, "be");
    }
 }
 
-// Grammar: verb + tense . | noun + after noun
+// Grammar: <afterSubject> ::= verb tense PERIOD | noun afterNoun
 void after_subject() {
    cout << "Processing <afterSubject>" << endl;
    switch(next_token()) {
@@ -430,12 +433,12 @@ void after_subject() {
          noun();
          after_noun();
          break;
-      default:
-         syntax_error2();
+      default: //Sends syntax error if unexpexted lexical found in parsing
+         syntax_error2(saved_lexeme, "afterSubject");
    }
 }
 
-// Grammar: be . | Dest + verb + tense . | obj + after obj
+// Grammar: <afterNoun> ::= be PERIOD | DESTINATION verb tense PERIOD | object afterObject
 void after_noun() {
    cout << "Processing <afterNoun>" << endl;
    switch(next_token()) {
@@ -452,12 +455,12 @@ void after_noun() {
       case OBJECT:
          match(OBJECT);
          after_object();
-      default:
-         syntax_error2();
+      default: //Sends syntax error if unexpexted lexical found in parsing
+         syntax_error2(saved_lexeme, "afterNoun");
    }
 }
 
-// Grammar: verb + tense . | noun + dest + verb + tense .
+// Grammar: <afterObject> ::= verb tense PERIOD | noun dest verb tense PERIOD
 void after_object()) {
    cout << "Processing <afterObject>" << endl;
    switch(next_token()) {
@@ -476,11 +479,12 @@ void after_object()) {
       case OBJECT:
          match(OBJECT);
          after_object();
-      default:
-         syntax_error2();
+      default: //Sends syntax error if unexpexted lexical found in parsing
+         syntax_error2(saved_lexeme, "afterObject");
    }
 }
 
+// Geammar: <s> ::= [CONNECTOR] noun SUBJECT after_subject
 void s() {
    cout << "Processing <s>" << endl;
 
@@ -491,10 +495,9 @@ void s() {
    noun();
    match(SUBJECT);
    after_subject();
-
 }
 
-// Grammar: Parse the story
+// Grammar: <s> { <s> } (Loops for as long as possible)
 void story() {
    cout << "Processing <story>" << endl;
 
@@ -517,7 +520,7 @@ string filename;
 //----------- Driver ---------------------------
 
 // The new test driver to start the parser
-// Done by:  **
+// Done by: Raymond Quach
 int main()
 {
   cout << "Enter the input file name: ";
