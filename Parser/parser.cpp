@@ -342,9 +342,6 @@ tokentype next_token() {
 // Purpose: Compares the saved token to the expected type and see if it matches
 // Done by: Raymond Quach
 bool match(tokentype expected) {
-  //Calls next_token
-  next_token();
-
   //Sends syntax error if token does not match expected
   if (saved_token != expected)
     syntax_error1(expected, saved_lexeme);
@@ -369,7 +366,7 @@ void noun() {
   cout << "Processing <noun>" << endl;
   switch(next_token()) {
     case WORD1:
-      match(WORD1);
+      match(WORD1); //This already called next_token() right before so it's fine
       break;
     case PRONOUN:
       match(PRONOUN);
@@ -496,10 +493,13 @@ void s() {
   cout << "Processing <s>" << endl;
 
   //If the next token is a connector, match it
+  /*Need to find a way to prevent it from getting called immediately on
+  processing story() global bool variable maybe(?), delete this comment block after*/
   if (next_token() == CONNECTOR) 
     match(CONNECTOR);
   
   noun();
+  next_token(); //Pretty sure this is needed everywhere before a match() call
   match(SUBJECT);
   after_subject();
 }
