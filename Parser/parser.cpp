@@ -524,8 +524,11 @@ int main()
   cin >> filename;
   fin.open(filename.c_str());
 
-  //** calls the <story> to start parsing
-  //** closes the input file 
+  //calls the <story> to start parsing
+  story();
+
+  //closes the input file
+  fin.close();
 
 }// end
 //** require no other input files!
