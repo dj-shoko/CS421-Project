@@ -15,20 +15,19 @@ using namespace std;
 */
 
 //=================================================
-// File scanner.cpp appended
+// File parser.cpp written by Group Number: 12
 //=================================================
 
-/* Look for all **'s and complete them */
-
-//=====================================================
-// File scanner.cpp written by: Group Number: 12
-//=====================================================
+//=================================================
+// File scanner.cpp appended
+//=================================================
 
 // --------- Two DFAs ---------------------------------
 
 // WORD DFA
-// Done by: Raymond Quach
-// RE:   **
+// Done by: Raymond Quach, Arnold Bermejo, Luis Zamora
+/* RE: (vowel | vowel n | consonant vowel | consonant vowel n |
+consonant-pair vowel | consonant-pair vowel n)^+ */
 
 bool word (string s)
 {
@@ -297,9 +296,7 @@ int scanner(tokentype& tt, string& w)
   return 0; // Stop giving me compile warnings >:(
 } //the end of scanner
 
-//=================================================
-// File parser.cpp written by Group Number: 12
-//=================================================
+//Start of the parser functions;
 
 // ----- Four Utility Functions and Globals -----------------------------------
 
