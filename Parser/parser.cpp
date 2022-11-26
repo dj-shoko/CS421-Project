@@ -303,26 +303,79 @@ int scanner(tokentype& tt, string& w)
 
 // ** Need syntaxerror1 and syntaxerror2 functions (each takes 2 args)
 //    to display syntax error messages as specified by me.
-tokentype saved_token;
-string saved_lexeme;
-bool con = false;
+
+tokentype saved_token; //Saved token type
+string saved_lexeme; //Saved lexical string
+string parserFunct; //Current parser function
+
+bool tracing = false;
+bool token_available = false; //If a future word can be a CONNECTOR
+
+ofstream error; //Output streaming for error log
+bool log_create = false; //If an error log will be created
+int line_number = 1;  //Line number for error in error log
+string choice;  //Choice for the error message and proceeding
 
 // Type of error: When the lexical does not match expected token name
-// Done By: Luis Zamora
+// Done By: Luis Zamora, Raymond Quach
 void syntax_error1(tokentype expected, string saved_lexeme)
 {
-  cout << "\nSYNTAX ERROR: expected " << tokenName[expected] << " but found "
-  << saved_lexeme << endl;
+  choice = ""; //Clear our choice
 
-  exit (1); //halting
+  if (tracing) { //Syntax error message  
+    cout << "\nSYNTAX ERROR: expected " << tokenName[expected] << " but found "
+    << saved_lexeme << endl;
+  }
+
+  //To create or clear the error log if one isn't created already
+  if (!log_create) {
+    error.open("error.txt", ofstream::out | ofstream::trunc);
+    error.close();
+  }
+
+  //Append error log file and add error info into it.
+  error.open("error.txt", ios_base::app);
+  if (tracing) //Have the terminal display processing message if tracing is on
+  error << "SYNTAX ERROR: expected " << tokenName[expected] << " but found "
+  << saved_lexeme << " in line " << line_number << "." << endl;
+
+  //Asks user if they want to skip or replace token
+  cout << "\nWould you like to skip token or replace with the right token?" <<
+  "\nEnter \"skip\" or \"replace\". To quit enter \"exit\": ";
+
+  //Keep asking the user until an appropriate choice is entered
+  while (choice != "exit") {
+    cin >> choice;
+    if (choice == "skip" || choice == "replace") 
+      return;
+    else if (choice == "exit")
+      exit (1); //halting
+    
+    //Message if invalid choice is chosen
+    cout << "Invalid choice, please enter \"skip\", \"replace\", or \"exit\": ";
+  }
+  cout << endl; //An extra space to make reading the terminal a bit cleaner
 }
 
 // Type of error: When unexpected lexical dound in RDP parser functions
-// Done By: Luis Zamora
+// Done By: Luis Zamora, Raymond Quach
 void syntax_error2(string saved_lexeme, string parserFunct)
 {
-  cout << "\nSYNTAX ERROR: unexpected " << saved_lexeme << " found in "
-  << parserFunct << endl;
+  if (tracing) { //Syntax error message  
+    cout << "\nSYNTAX ERROR: unexpected " << saved_lexeme << " found in "
+    << parserFunct << endl;
+  }
+
+  //To create or clear the error log if one isn't created already
+  if (!log_create) {
+    error.open("error.txt", ofstream::out | ofstream::trunc);
+    error.close();
+  }
+
+  //Append error log file and add error info into it.
+  error.open("error.txt", ios_base::app);
+  error << "SYNTAX ERROR: unexpected " << saved_lexeme << " found in "
+  << parserFunct << " in line " << line_number << "." << endl;
 
   exit (1); //halting
 }
@@ -333,10 +386,10 @@ void syntax_error2(string saved_lexeme, string parserFunct)
 // Purpose: Grabs the next token and update it in two variables
 // Done by: Raymond Quach
 tokentype next_token() {
-  //Calls the scanner to retrieve token and lexeme
-  if (!con) {
+  //Calls the scanner to retrieve token and lexical
+  if (!token_available) {
     scanner(saved_token, saved_lexeme);
-    con = true;
+    token_available = true;
   }
 
   //Returns the token value to global variable
@@ -346,16 +399,26 @@ tokentype next_token() {
 // Purpose: Compares the saved token to the expected type and see if it matches
 // Done by: Raymond Quach
 bool match(tokentype expected) {
-  //Sends syntax error if token does not match expected
-  if (next_token() != expected)
-    syntax_error1(expected, saved_lexeme);
+  tokentype match = next_token();
 
-  //Sends message of matched token and return true
-  else {
-    cout << "Matched " << tokenName[expected] << endl;
-    con = false;
+  //Sends syntax error if token does not match expected
+  if (match != expected)
+    syntax_error1(saved_token, saved_lexeme);
+
+  //If the line ends, increment the line number by 1 for error log in case needed
+  if (match == PERIOD) 
+    line_number += 1;
+
+  token_available = false; //Set CONNECTOR as next token possibility as false
+
+  //If the choice after the syntax error is skip then return true.
+  if (choice == "skip")
     return true;
-  }
+
+  if (tracing) //Sends message of matched token if tracing is on
+    cout << "Matched " << tokenName[expected] << endl;
+
+  return true;
 }
 
 // ----- RDP functions - one per non-term -------------------
@@ -364,159 +427,258 @@ bool match(tokentype expected) {
 // ** Be sure to put the corresponding grammar rule above each function
 // ** Be sure to put the name of the programmer above each function
 
-// Done by: Raymond Quach (for all of below) 
-
+// Done by: Raymond Quach
 // Grammar: <noun> ::= WORD1 | PRONOUN
 void noun() {
-  cout << "Processing <noun>" << endl;
+  parserFunct = "noun";
+  if (tracing) //Have the terminal display processing message if tracing is on
+    cout << "Processing <noun>" << endl;
   switch(next_token()) {
     case WORD1:
-      match(WORD1);
+      if (match(WORD1))
+        if (choice == "skip") {
+          choice = ""; //So it doesn't loop back when matching next word 
+          match(WORD1);
+        }
       break;
     case PRONOUN:
-      match(PRONOUN);
+      if (match(PRONOUN))
+        if (choice == "skip") {
+          choice = ""; //So it doesn't loop back when matching next word 
+          match(PRONOUN);
+        }
       break;
     default: //Sends syntax error if unexpexted lexical found in parsing
-      syntax_error2(saved_lexeme, "noun");
+      syntax_error2(saved_lexeme, parserFunct);
   }
 }
 
+// Done by: Raymond Quach
 // Grammar: <verb> ::= WORD2
 void verb() {
-  cout << "Processing <verb>" << endl;
+  parserFunct = "verb";
+  if (tracing) //Have the terminal display processing message if tracing is on
+    cout << "Processing <verb>" << endl;
   switch(next_token()) {
     case WORD2:
-      match(WORD2);
+      if (match(WORD2))
+        if (choice == "skip") {
+          choice = ""; //So it doesn't loop back when matching next word
+          match(WORD2);
+        }
       break;
     default: //Sends syntax error if unexpexted lexical found in parsing
-      syntax_error2(saved_lexeme, "verb");
+      syntax_error2(saved_lexeme, parserFunct);
   }
 }
 
+// Done by: Raymond Quach
 // Grammar: <tense> ::= VERB | VERB NEGATIVE | VERB PAST | VERB PAST NEGATIVE
 void verb_tense() {
-  cout << "Processing <tense>" << endl;
+  parserFunct = "tense";
+  if (tracing) //Have the terminal display processing message if tracing is on
+    cout << "Processing <tense>" << endl;
   switch(next_token()) {
     case VERB:
-      match(VERB);
+      if (match(VERB))
+        if (choice == "skip") {
+          choice = ""; //So it doesn't loop back when matching next word 
+          match(VERB);
+        }
       break;
     case VERBNEG:
-      match(VERBNEG);
+      if (match(VERBNEG))
+        if (choice == "skip") {
+          choice = ""; //So it doesn't loop back when matching next word 
+          match(VERBNEG);
+        }
       break;
     case VERBPAST:
-      match(VERBPAST);
+      if (match(VERBPAST))
+        if (choice == "skip") {
+          choice = ""; //So it doesn't loop back when matching next word
+          match(VERBPAST);
+        }
       break;
     case VERBPASTNEG:
-      match(VERBPASTNEG);
+      if (match(VERBPASTNEG))
+        if (choice == "skip") {
+          choice = ""; //So it doesn't loop back when matching next word 
+          match(VERBPASTNEG);
+        }
       break;
     default: //Sends syntax error if unexpexted lexical found in parsing
-      syntax_error2(saved_lexeme, "tense");
+      syntax_error2(saved_lexeme, parserFunct);
   }
 }
 
+// Done by: Raymond Quach
 // Grammar: <be> ::= IS | WAS
 void be() {
-  cout << "Processing <be>" << endl;
+  parserFunct = "be";
+  if (tracing) //Have the terminal display processing message if tracing is on
+    cout << "Processing <be>" << endl;
   switch(next_token()) {
     case IS:
-      match(IS);
+      if (match(IS))
+        if (choice == "skip") {
+          choice = ""; //So it doesn't loop back when matching next word 
+          match(IS);
+        }
       break;
     case WAS:
-      match(WAS);
+      if (match(WAS))
+        if (choice == "skip") {
+          choice = ""; //So it doesn't loop back when matching next word 
+          match(WAS);
+        }
       break;
     default: //Sends syntax error if unexpexted lexical found in parsing
-      syntax_error2(saved_lexeme, "be");
+      syntax_error2(saved_lexeme, parserFunct);
   }
 }
 
+// Done by: Raymond Quach
 // Grammar: <afterObject> ::= verb tense PERIOD | noun dest verb tense PERIOD
 void after_object() {
-  cout << "Processing <afterObject>" << endl;
+  parserFunct = "afterObject";
+  if (tracing) //Have the terminal display processing message if tracing is on
+    cout << "Processing <afterObject>" << endl;
   switch(next_token()) {
     case WORD2:
       verb();
       verb_tense();
-      match(PERIOD);
+      if (match(PERIOD))
+        if (choice == "skip") {
+          choice = ""; //So it doesn't loop back when matching next word 
+          match(PERIOD);
+        }
       break;
     case WORD1: case PRONOUN:
       noun();
-      match(DESTINATION);
+      if (match(DESTINATION))
+        if (choice == "skip") {
+          choice = ""; //So it doesn't loop back when matching next word 
+          match(DESTINATION);
+        }
       verb();
       verb_tense();
-      match(PERIOD);
+      if (match(PERIOD))
+        if (choice == "skip") {
+          choice = ""; //So it doesn't loop back when matching next word 
+          match(PERIOD);
+        }
       break;
     default: //Sends syntax error if unexpexted lexical found in parsing
-      syntax_error2(saved_lexeme, "afterObject");
+      syntax_error2(saved_lexeme, parserFunct);
   }
 }
 
+// Done by: Raymond Quach
 // Grammar: <afterNoun> ::= be PERIOD | DESTINATION verb tense PERIOD | object afterObject
 void after_noun() {
-  cout << "Processing <afterNoun>" << endl;
+  parserFunct = "afterNoun";
+  if (tracing) //Have the terminal display processing message if tracing is on
+    cout << "Processing <afterNoun>" << endl;
   switch(next_token()) {
     case IS: case WAS:
       be();
-      match(PERIOD);
+      if (match(PERIOD))
+        if (choice == "skip") {
+          choice = ""; //So it doesn't loop back when matching next word
+          match(PERIOD);
+        }
       break;
     case DESTINATION:
-      match(DESTINATION);
+      if (match(DESTINATION))
+        if (choice == "skip") {
+          choice = ""; //So it doesn't loop back when matching next word 
+          match(DESTINATION);
+        }
       verb();
       verb_tense();
-      match(PERIOD);
+      if (match(PERIOD))
+        if (choice == "skip") {
+          choice = ""; //So it doesn't loop back when matching next word 
+          match(PERIOD);
+        }
       break;
     case OBJECT:
-      match(OBJECT);
+      if (match(OBJECT))
+        if (choice == "skip") {
+          choice = ""; //So it doesn't loop back when matching next word 
+          match(OBJECT);
+        }
       after_object();
       break;
     default: //Sends syntax error if unexpexted lexical found in parsing
-      syntax_error2(saved_lexeme, "afterNoun");
+      syntax_error2(saved_lexeme, parserFunct);
   }
 }
 
+// Done by: Raymond Quach
 // Grammar: <afterSubject> ::= verb tense PERIOD | noun afterNoun
 void after_subject() {
-  cout << "Processing <afterSubject>" << endl;
+  parserFunct = "afterSubject";
+  if (tracing) //Have the terminal display processing message if tracing is on
+    cout << "Processing <afterSubject>" << endl;
   switch(next_token()) {
     case WORD2:
       verb();
       verb_tense();
-      match(PERIOD);
+      if (match(PERIOD))
+        if (choice == "skip") {
+          choice = ""; //So it doesn't loop back when matching next word 
+          match(PERIOD);
+        }
       break;
     case WORD1: PRONOUN:
       noun();
       after_noun();
       break;
     default: //Sends syntax error if unexpexted lexical found in parsing
-      syntax_error2(saved_lexeme, "afterSubject");
+      syntax_error2(saved_lexeme, parserFunct);
   }
 }
 
-// Geammar: <s> ::= [CONNECTOR] noun SUBJECT after_subject
+// Done by: Raymond Quach
+// Grammar: <s> ::= [CONNECTOR] noun SUBJECT after_subject
 void s() {
-  cout << "Processing <s>" << endl;
+  if (tracing) //Have the terminal display processing message if tracing is on
+    cout << "Processing <s>" << endl;
 
   //If the next token is a connector, match it
-  if (next_token() == CONNECTOR) 
-    match(CONNECTOR);
-  
+  if (next_token() == CONNECTOR) {
+    if (match(CONNECTOR))
+      if (choice == "skip") {
+        choice = ""; //So it doesn't loop back when matching next word 
+        match(CONNECTOR);
+      }
+  }
   noun();
-  match(SUBJECT);
+  if (match(SUBJECT))
+    if (choice == "skip") {
+      choice = ""; //So it doesn't loop back when matching next word  
+      match(SUBJECT);
+    }
   after_subject();
 }
 
+// Done by: Raymond Quach
 // Grammar: <s> { <s> } (Loops for as long as possible)
 void story() {
-  cout << "Processing <story>\n\n";
+  if (tracing) //Have the terminal display processing message if tracing is on
+    cout << "Processing <story>\n\n";
 
   s(); //Proccesses <s>
 
   //Loops s() next token is either a connector, word1, or pronoun
   while (1) {
     if (next_token() == CONNECTOR ||
-      next_token() == WORD1 || next_token() == PRONOUN)
-         s();
-      else
-         break;
+    next_token() == WORD1 || next_token() == PRONOUN)
+      s();
+    else
+      break;
   }
 
   cout << "\nSuccessfully parsed <story>." << endl;
@@ -533,6 +695,19 @@ int main()
   cout << "Enter the input file name: ";
   cin >> filename;
   fin.open(filename.c_str());
+
+  cout << "Would you like to enable tracing messages?" <<
+  "\nEnter \"yes\" or \"no\": ";
+  cin >> choice;
+  while (choice != "yes" && choice != "no") {
+    cout << "Please enter \"yes\" or \"no\": ";
+    cin >> choice;
+  }
+
+  if (choice == "yes")
+    tracing = true;
+
+  choice = "";
 
   //calls the <story> to start parsing
   story();
