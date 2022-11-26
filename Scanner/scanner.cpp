@@ -308,6 +308,7 @@ tokentype saved_token; //Saved token type
 string saved_lexeme; //Saved lexical string
 string parserFunct; //Current parser function
 
+bool tracing = false;
 bool token_available = false; //If a future word can be a CONNECTOR
 
 ofstream error; //Output streaming for error log
@@ -321,9 +322,10 @@ void syntax_error1(tokentype expected, string saved_lexeme)
 {
   choice = ""; //Clear our choice
 
-  //Syntax error message
-  cout << "\nSYNTAX ERROR: expected " << tokenName[expected] << " but found "
-  << saved_lexeme << endl;
+  if (tracing) { //Syntax error message  
+    cout << "\nSYNTAX ERROR: expected " << tokenName[expected] << " but found "
+    << saved_lexeme << endl;
+  }
 
   //To create or clear the error log if one isn't created already
   if (!log_create) {
@@ -333,12 +335,13 @@ void syntax_error1(tokentype expected, string saved_lexeme)
 
   //Append error log file and add error info into it.
   error.open("error.txt", ios_base::app);
+  if (tracing) //Have the terminal display processing message if tracing is on
   error << "SYNTAX ERROR: expected " << tokenName[expected] << " but found "
   << saved_lexeme << " in line " << line_number << "." << endl;
 
   //Asks user if they want to skip or replace token
-  cout << "Would you like to skip token or replace with the right token?\n" <<
-  "Enter \"skip\" or \"replace\". To quit enter \"exit\": ";
+  cout << "\nWould you like to skip token or replace with the right token?" <<
+  "\nEnter \"skip\" or \"replace\". To quit enter \"exit\": ";
 
   //Keep asking the user until an appropriate choice is entered
   while (choice != "exit") {
@@ -351,14 +354,17 @@ void syntax_error1(tokentype expected, string saved_lexeme)
     //Message if invalid choice is chosen
     cout << "Invalid choice, please enter \"skip\", \"replace\", or \"exit\": ";
   }
+  cout << endl; //An extra space to make reading the terminal a bit cleaner
 }
 
 // Type of error: When unexpected lexical dound in RDP parser functions
 // Done By: Luis Zamora
 void syntax_error2(string saved_lexeme, string parserFunct)
 {
-  cout << "\nSYNTAX ERROR: unexpected " << saved_lexeme << " found in "
-  << parserFunct << endl;
+  if (tracing) { //Syntax error message  
+    cout << "\nSYNTAX ERROR: unexpected " << saved_lexeme << " found in "
+    << parserFunct << endl;
+  }
 
   //To create or clear the error log if one isn't created already
   if (!log_create) {
@@ -409,8 +415,9 @@ bool match(tokentype expected) {
   if (choice == "skip")
     return true;
 
-  //Sends message of matched token and return true
-  cout << "Matched " << tokenName[expected] << endl;
+  if (tracing) //Sends message of matched token if tracing is on
+    cout << "Matched " << tokenName[expected] << endl;
+
   return true;
 }
 
@@ -424,7 +431,8 @@ bool match(tokentype expected) {
 // Grammar: <noun> ::= WORD1 | PRONOUN
 void noun() {
   parserFunct = "noun";
-  cout << "Processing <noun>" << endl;
+  if (tracing) //Have the terminal display processing message if tracing is on
+    cout << "Processing <noun>" << endl;
   switch(next_token()) {
     case WORD1:
       if (match(WORD1))
@@ -449,7 +457,8 @@ void noun() {
 // Grammar: <verb> ::= WORD2
 void verb() {
   parserFunct = "verb";
-  cout << "Processing <verb>" << endl;
+  if (tracing) //Have the terminal display processing message if tracing is on
+    cout << "Processing <verb>" << endl;
   switch(next_token()) {
     case WORD2:
       if (match(WORD2))
@@ -467,7 +476,8 @@ void verb() {
 // Grammar: <tense> ::= VERB | VERB NEGATIVE | VERB PAST | VERB PAST NEGATIVE
 void verb_tense() {
   parserFunct = "tense";
-  cout << "Processing <tense>" << endl;
+  if (tracing) //Have the terminal display processing message if tracing is on
+    cout << "Processing <tense>" << endl;
   switch(next_token()) {
     case VERB:
       if (match(VERB))
@@ -506,7 +516,8 @@ void verb_tense() {
 // Grammar: <be> ::= IS | WAS
 void be() {
   parserFunct = "be";
-  cout << "Processing <be>" << endl;
+  if (tracing) //Have the terminal display processing message if tracing is on
+    cout << "Processing <be>" << endl;
   switch(next_token()) {
     case IS:
       if (match(IS))
@@ -531,7 +542,8 @@ void be() {
 // Grammar: <afterObject> ::= verb tense PERIOD | noun dest verb tense PERIOD
 void after_object() {
   parserFunct = "afterObject";
-  cout << "Processing <afterObject>" << endl;
+  if (tracing) //Have the terminal display processing message if tracing is on
+    cout << "Processing <afterObject>" << endl;
   switch(next_token()) {
     case WORD2:
       verb();
@@ -566,7 +578,8 @@ void after_object() {
 // Grammar: <afterNoun> ::= be PERIOD | DESTINATION verb tense PERIOD | object afterObject
 void after_noun() {
   parserFunct = "afterNoun";
-  cout << "Processing <afterNoun>" << endl;
+  if (tracing) //Have the terminal display processing message if tracing is on
+    cout << "Processing <afterNoun>" << endl;
   switch(next_token()) {
     case IS: case WAS:
       be();
@@ -607,7 +620,8 @@ void after_noun() {
 // Grammar: <afterSubject> ::= verb tense PERIOD | noun afterNoun
 void after_subject() {
   parserFunct = "afterSubject";
-  cout << "Processing <afterSubject>" << endl;
+  if (tracing) //Have the terminal display processing message if tracing is on
+    cout << "Processing <afterSubject>" << endl;
   switch(next_token()) {
     case WORD2:
       verb();
@@ -630,7 +644,8 @@ void after_subject() {
 // Done by: Raymond Quach
 // Grammar: <s> ::= [CONNECTOR] noun SUBJECT after_subject
 void s() {
-  cout << "Processing <s>" << endl;
+  if (tracing) //Have the terminal display processing message if tracing is on
+    cout << "Processing <s>" << endl;
 
   //If the next token is a connector, match it
   if (next_token() == CONNECTOR) {
@@ -652,7 +667,8 @@ void s() {
 // Done by: Raymond Quach
 // Grammar: <s> { <s> } (Loops for as long as possible)
 void story() {
-  cout << "Processing <story>\n\n";
+  if (tracing) //Have the terminal display processing message if tracing is on
+    cout << "Processing <story>\n\n";
 
   s(); //Proccesses <s>
 
@@ -679,6 +695,19 @@ int main()
   cout << "Enter the input file name: ";
   cin >> filename;
   fin.open(filename.c_str());
+
+  cout << "Would you like to enable tracing messages?" <<
+  "\nEnter \"yes\" or \"no\": ";
+  cin >> choice;
+  while (choice != "yes" && choice != "no") {
+    cout << "Please enter \"yes\" or \"no\": ";
+    cin >> choice;
+  }
+
+  if (choice == "yes")
+    tracing = true;
+
+  choice = "";
 
   //calls the <story> to start parsing
   story();
