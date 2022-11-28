@@ -1,6 +1,7 @@
 #include<iostream>
 #include<fstream>
 #include<string>
+#include <cstdlib>
 using namespace std;
 
 #define DEBUG "DEBUG: RESERVED WORD TYPE IS "
@@ -200,6 +201,7 @@ string reservedwords[30][2] = {
 // ------------ Scanner and Driver -----------------------
 
 ifstream fin;  // global stream for reading from the input file
+bool replace = false;
 
 // Scanner processes only one word each time it is called
 // Gives back the token type and the word itself
@@ -207,9 +209,11 @@ ifstream fin;  // global stream for reading from the input file
 int scanner(tokentype& tt, string& w)
 {
   // Grab the next word from the file via fin
-  fin >> w;
+  if (!replace) { //If the syntax error replacement is not in check
+    fin >> w;
 
-  cout << "Scanner called using word: " << w << endl;
+    cout << "Scanner called using word: " << w << endl;
+  }
 
   // If the word is "eofm" then return right now.
   if (w == "eofm")
@@ -321,6 +325,7 @@ string choice;  //Choice for the error message and proceeding
 void syntax_error1(tokentype expected, string saved_lexeme)
 {
   choice = ""; //Clear our choice
+  tokentype compare; //To compare replacement tokentype with expected
 
   if (tracing) { //Syntax error message  
     cout << "\nSYNTAX ERROR: expected " << tokenName[expected] << " but found "
@@ -346,7 +351,21 @@ void syntax_error1(tokentype expected, string saved_lexeme)
   //Keep asking the user until an appropriate choice is entered
   while (choice != "exit") {
     cin >> choice;
-    if (choice == "skip" || choice == "replace") 
+    if (choice == "replace") {
+      cout << "What would you like to replace \"" << saved_lexeme << "\" with? ";
+      replace = true; //Sets replace to true for scanner call to not call next token
+      while (1) {
+        cin >> saved_lexeme; //Asks for the new word
+        scanner(compare, saved_lexeme); //Calls scanner to check lexical
+        cout << endl;
+        if (compare == expected) { //See if the new word matches
+          replace = false; //Resets the replace to false
+          return;
+        }
+        cout << "Please enter a valid word: ";
+      }
+    }
+    else if (choice == "skip")
       return;
     else if (choice == "exit")
       exit (1); //halting
@@ -403,7 +422,7 @@ bool match(tokentype expected) {
 
   //Sends syntax error if token does not match expected
   if (match != expected)
-    syntax_error1(saved_token, saved_lexeme);
+    syntax_error1(expected, saved_lexeme);
 
   //If the line ends, increment the line number by 1 for error log in case needed
   if (match == PERIOD) 
@@ -538,7 +557,7 @@ void be() {
   }
 }
 
-// Done by: Raymond Quach
+// Done by: Arnold Bermejo
 // Grammar: <afterObject> ::= verb tense PERIOD | noun dest verb tense PERIOD
 void after_object() {
   parserFunct = "afterObject";
@@ -574,7 +593,7 @@ void after_object() {
   }
 }
 
-// Done by: Raymond Quach
+// Done by: Arnold Bermejo
 // Grammar: <afterNoun> ::= be PERIOD | DESTINATION verb tense PERIOD | object afterObject
 void after_noun() {
   parserFunct = "afterNoun";
@@ -616,7 +635,7 @@ void after_noun() {
   }
 }
 
-// Done by: Raymond Quach
+// Done by: Arnold Bermejo
 // Grammar: <afterSubject> ::= verb tense PERIOD | noun afterNoun
 void after_subject() {
   parserFunct = "afterSubject";
@@ -641,7 +660,7 @@ void after_subject() {
   }
 }
 
-// Done by: Raymond Quach
+// Done by: Luis Zamora
 // Grammar: <s> ::= [CONNECTOR] noun SUBJECT after_subject
 void s() {
   if (tracing) //Have the terminal display processing message if tracing is on
@@ -664,7 +683,7 @@ void s() {
   after_subject();
 }
 
-// Done by: Raymond Quach
+// Done by: Luis Zamora
 // Grammar: <s> { <s> } (Loops for as long as possible)
 void story() {
   if (tracing) //Have the terminal display processing message if tracing is on
