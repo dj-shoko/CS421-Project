@@ -864,7 +864,6 @@ int main()
 {
   fin.open("lexicon.txt"); //Open lexicon.txt for vector
 
-  int lex = 0;
   string lexical; //Store lexical value for vector
   while (fin >> lexical) //Reads lexicon.txt until end
       lexicon.push_back(lexical);
