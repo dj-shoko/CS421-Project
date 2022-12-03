@@ -897,7 +897,8 @@ int main()
 
   //closes the input file
   fin.close();
-
+  
+  //Closes translated.txt
   translation.close();
 }// end
 //** require no other input files!
