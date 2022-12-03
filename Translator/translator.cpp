@@ -1,7 +1,8 @@
 #include<iostream>
 #include<fstream>
 #include<string>
-#include <cstdlib>
+#include<vector>
+#include<cstdlib>
 using namespace std;
 
 #define DEBUG "DEBUG: RESERVED WORD TYPE IS "
@@ -17,7 +18,7 @@ using namespace std;
 //=================================================
 
 //=================================================
-// Additions starts on Line 305
+// Additions starts on Line 305WWWWWWW
 //=================================================
 
 //=================================================
@@ -325,56 +326,8 @@ string choice;  //Choice for the error message and proceeding
 // Do not change the format or content of lexicon.txt 
 // Done by: Raymond Quach
 
-//Lexicon table
-string lexicon[47][2] = {
-  {"watashi", "I/me"},
-  {"anata", "you"},			
-  {"kare", "he/him"},		
-  {"kanojo", "she/her"},
-  {"sore", "it"},			
-  {"mata", "Also"},                       	
-  {"soshite", "Then"},
-  {"shikashi", "However"},				
-  {"dakara", "Therefore"},			
-  {"daigaku", "college"},    
-  {"kurasu", "class"},     
-  {"hon", "book"},     
-  {"tesuto", "test"},     
-  {"ie", "home"},
-  {"isu", "chair"},
-  {"seito", "student"},
-  {"sensei", "teacher"},
-  {"tomodachi", "friend"},
-  {"jidoosha", "car"},    
-  {"gyuunyuu", "milk"},
-  {"biiru", "beer"},
-  {"choucho", "butterfly"},
-  {"ryouri", "cooking"},
-  {"toire", "restroom"},
-  {"gohan", "meal"},
-  {"yasashii", "easy"},
-  {"muzukashii", "difficult"},
-  {"ureshii", "pleased"},
-  {"shiawase", "happy"},
-  {"kanashii", "sad"},
-  {"omoi", "heavy"},
-  {"oishii", "delicious"},
-  {"tennen", "natural"},
-  {"nakI", "cry"},
-  {"ikI", "go"},
-  {"tabE", "eat"},
-  {"ukE", "take"},
-  {"kakI", "write"},
-  {"yomI", "read"},
-  {"nomI", "drink"},
-  {"agE", "give"},
-  {"moraI", "receive"},
-  {"butsI", "hit"},
-  {"kerI", "kick"},
-  {"shaberI", "talk"},
-  {"yarI", "do"},
-  {"yorokobI", "enjoy"},
-};
+//Lexicon vector
+vector<string> lexicon;
 
 // ** Additions to parser.cpp here:
 //    getEword() - using the current saved_lexeme, look up the English word
@@ -384,10 +337,10 @@ string lexicon[47][2] = {
 
 void getEword() {
   //For loop to determine the value of saved_E_word
-  for (int i = 0; i < 47; i++) {
+  for (int i = 0; i < lexicon.size(); i+=2) {
     //If there is a match, save it to saved_E_word
-    if (lexicon[i][0] == saved_lexeme) {
-      saved_E_word = lexicon[i][1];
+    if (lexicon[i] == saved_lexeme) {
+      saved_E_word = lexicon[i+1];
       return; //Break loop to be efficient
     }     
   }
@@ -404,7 +357,7 @@ void gen(string line_type) {
   //Variable 'l' for switch statement below matching first char
   char l = line_type.at(0);
 
-  //Exception cases TENSE and ACTION
+  //Exception cases TENSE and ACTION, use last char instead
   if (line_type == "TENSE")
     l = 'E';
   else if (line_type == "ACTION")
@@ -439,7 +392,7 @@ void gen(string line_type) {
       break;
   }
 
-  //If, else if version of this function
+  //If/else version of this function
   //I didn't feel like this many if/else was efficient
   /*
   if (line_type == "CONNECTOR")
@@ -468,15 +421,6 @@ void gen(string line_type) {
 
 // ** Each non-terminal function should be calling
 //    getEword and/or gen now.
-
-/* INSTRUCTION:  Complete all ** parts.
-   You may use any method to connect this file to scanner.cpp
-   that you had written.  
-  e.g. You can copy scanner.cpp here by:
-          cp ../ScannerFiles/scanner.cpp .  
-       and then append the two files into one: 
-          cat scanner.cpp parser.cpp > myparser.cpp
-*/
 
 //Start of the parser functions;
 
@@ -748,7 +692,7 @@ void after_object() {
       //Calls getEword and gen for translation output.
       getEword();
       gen("TO");
-      
+
       if (match(DESTINATION))
         if (choice == "skip") {
           choice = ""; //So it doesn't loop back when matching next word 
@@ -918,6 +862,15 @@ string filename;
 // Done by: Raymond Quach
 int main()
 {
+  fin.open("lexicon.txt"); //Open lexicon.txt for vector
+
+  int lex = 0;
+  string lexical; //Store lexical value for vector
+  while (fin >> lexical) //Reads lexicon.txt until end
+      lexicon.push_back(lexical);
+    
+  fin.close(); //No longer need lexicon.txt
+
   cout << "Enter the input file name: ";
   cin >> filename;
   fin.open(filename.c_str());
@@ -937,6 +890,7 @@ int main()
 
   choice = ""; //Sets it back to blank since it's used for other choices...
 
+  //Creates or clears existing translated.txt for appending
   translation.open("translated.txt", ofstream::out | ofstream::trunc);
 
   //calls the <story> to start parsing
