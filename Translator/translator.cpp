@@ -18,7 +18,7 @@ using namespace std;
 //=================================================
 
 //=================================================
-// Additions starts on Line 305WWWWWWW
+// Additions starts on Line 305
 //=================================================
 
 //=================================================
@@ -326,23 +326,22 @@ string choice;  //Choice for the error message and proceeding
 // Do not change the format or content of lexicon.txt 
 // Done by: Raymond Quach
 
-//Lexicon vector
-vector<string> lexicon;
+//Multidimensional lexicon vector
+vector<vector<string> > lexicon;
 
 // ** Additions to parser.cpp here:
 //    getEword() - using the current saved_lexeme, look up the English word
 //                 in Lexicon if it is there -- save the result   
 //                 in saved_E_word
 //  Done by: Raymond Quach
-
 void getEword() {
   //For loop to determine the value of saved_E_word
-  for (int i = 0; i < lexicon.size(); i+=2) {
+  for (int i = 0; i < lexicon.size(); i++) {
     //If there is a match, save it to saved_E_word
-    if (lexicon[i] == saved_lexeme) {
-      saved_E_word = lexicon[i+1];
+    if (lexicon[i][0] == saved_lexeme) {
+      saved_E_word = lexicon[i][1];
       return; //Break loop to be efficient
-    }     
+    }
   }
   //If no English equivalent, just save it anyways
   saved_E_word = saved_lexeme;
@@ -352,7 +351,6 @@ void getEword() {
 //                     sends a line of an IR to translated.txt
 //                     (saved_E_word or saved_token is used)
 //  Done by: Raymond Quach
-
 void gen(string line_type) {
   //Variable 'l' for switch statement below matching first char
   char l = line_type.at(0);
@@ -430,7 +428,7 @@ void gen(string line_type) {
 //    to display syntax error messages as specified by me.
 
 // Type of error: When the lexical does not match expected token name
-// Done By: Luis Zamora, Raymond Quach
+// Done By: Luis Zamora, Raymond Quach (Only for EC)
 void syntax_error1(tokentype expected, string saved_lexeme)
 {
   choice = ""; //Clear our choice
@@ -486,7 +484,7 @@ void syntax_error1(tokentype expected, string saved_lexeme)
 }
 
 // Type of error: When unexpected lexical dound in RDP parser functions
-// Done By: Luis Zamora, Raymond Quach
+// Done By: Luis Zamora, Raymond Quach (Only for EC)
 void syntax_error2(string saved_lexeme, string parserFunct)
 {
   if (tracing) { //Syntax error message  
@@ -667,7 +665,7 @@ void be() {
 }
 
 // Done by: Arnold Bermejo
-// Grammar: <afterObject> ::= verb tense PERIOD | noun dest verb tense PERIOD
+// Grammar: <afterObject> ::= verb tense PERIOD | noun dest verb tense PERIOD [*>w<*]
 void after_object() {
   parserFunct = "afterObject";
   if (tracing) //Have the terminal display processing message if tracing is on
@@ -718,7 +716,7 @@ void after_object() {
 }
 
 // Done by: Arnold Bermejo
-// Grammar: <afterNoun> ::= be PERIOD | DESTINATION verb tense PERIOD | object afterObject
+// Grammar: <afterNoun> ::= be PERIOD | DESTINATION verb tense PERIOD | object afterObject [*>w<*]
 void after_noun() {
   parserFunct = "afterNoun";
   if (tracing) //Have the terminal display processing message if tracing is on
@@ -770,7 +768,7 @@ void after_noun() {
 }
 
 // Done by: Arnold Bermejo
-// Grammar: <afterSubject> ::= verb tense PERIOD | noun afterNoun
+// Grammar: <afterSubject> ::= verb tense PERIOD | noun afterNoun [*>w<*]
 void after_subject() {
   parserFunct = "afterSubject";
   if (tracing) //Have the terminal display processing message if tracing is on
@@ -803,7 +801,7 @@ void after_subject() {
 }
 
 // Done by: Luis Zamora
-// Grammar: <s> ::= [CONNECTOR] noun SUBJECT after_subject
+// Grammar: <s> ::= [CONNECTOR] noun SUBJECT after_subject [*>w<*]
 void s() {
   if (tracing) //Have the terminal display processing message if tracing is on
     cout << "Processing <s>" << endl;
@@ -859,14 +857,24 @@ string filename;
 //----------- Driver ---------------------------
 
 // The final test driver to start the translation
-// Done by: Raymond Quach
+// Done by: Arnold Bermejo, Raymond Quach (only for EC)
 int main()
 {
   fin.open("lexicon.txt"); //Open lexicon.txt for vector
 
+  int lexicalTracker = 1;
+
   string lexical; //Store lexical value for vector
-  while (fin >> lexical) //Reads lexicon.txt until end
-      lexicon.push_back(lexical);
+  while (!fin.eof()) { //Reads lexicon.txt until end
+      //Temporary vector for multidimensional lexicon pushback
+      vector<string> temp;
+
+      for (int i = 0; i < 2; i++) { //Grabs two values for each row
+        fin >> lexical; //Grabs the next lexical value
+        temp.push_back(lexical); //Pushes value into temporary vector
+      }
+    lexicon.push_back(temp); //Push back the vector itself
+  }
     
   fin.close(); //No longer need lexicon.txt
 
@@ -885,7 +893,7 @@ int main()
   }
 
   if (choice == "yes")
-    tracing = true;
+    tracing = true; //Tracing messages will be enabled
 
   choice = ""; //Sets it back to blank since it's used for other choices...
 
