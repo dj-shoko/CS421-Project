@@ -443,6 +443,7 @@ void syntax_error1(tokentype expected, string saved_lexeme)
   if (!log_create) {
     error.open("errors.txt", ofstream::out | ofstream::trunc);
     error.close(); //Closes error log
+    log_create == true;
   }
 
   //Append error log file and add error info into it.
@@ -496,6 +497,7 @@ void syntax_error2(string saved_lexeme, string parserFunct)
   if (!log_create) {
     error.open("errors.txt", ofstream::out | ofstream::trunc);
     error.close(); //Close error log
+    log_create == true;
   }
 
   //Append error log file and add error info into it.
@@ -849,7 +851,8 @@ void story() {
       break;
   }
 
-  cout << "\nSuccessfully parsed <story>." << endl;
+  if (tracing) //Have the terminal display processing message if tracing is on
+    cout << "\nSuccessfully parsed <story>." << endl;
 }
 
 string filename;
