@@ -675,10 +675,8 @@ void after_object() {
   switch(next_token()) {
     case WORD2:
       verb();
-      //Calls getEword and gen for translation output.
       getEword();
       gen("ACTION");
-
       verb_tense();
       gen("TENSE");
       if (match(PERIOD))
@@ -689,21 +687,16 @@ void after_object() {
       break;
     case WORD1: case PRONOUN:
       noun();
-      //Calls getEword and gen for translation output.
       getEword();
-      gen("TO");
-
       if (match(DESTINATION))
         if (choice == "skip") {
           choice = ""; //So it doesn't loop back when matching next word 
           match(DESTINATION);
         }
+      gen("TO");
       verb();
-
-      //Calls getEword and gen for translation output.
       getEword();
       gen("ACTION");
-
       verb_tense();
       gen("TENSE");
       if (match(PERIOD))
@@ -725,8 +718,8 @@ void after_noun() {
     cout << "Processing <afterNoun>" << endl;
   switch(next_token()) {
     case IS: case WAS:
-      gen("DESCRIPTION");
       be();
+      gen("DESCRIPTION");
       gen("TENSE");
       if (match(PERIOD))
         if (choice == "skip") {
@@ -735,18 +728,15 @@ void after_noun() {
         }
       break;
     case DESTINATION:
-      gen("TO");
       if (match(DESTINATION))
         if (choice == "skip") {
           choice = ""; //So it doesn't loop back when matching next word 
           match(DESTINATION);
         }
+      gen("TO");
       verb();
-
-      //Calls getEword and gen for translation output.
       getEword();
       gen("ACTION");
-      
       verb_tense();
       gen("TENSE");
       if (match(PERIOD))
@@ -756,12 +746,12 @@ void after_noun() {
         }
       break;
     case OBJECT:
-      gen("OBJECT");
       if (match(OBJECT))
         if (choice == "skip") {
           choice = ""; //So it doesn't loop back when matching next word 
           match(OBJECT);
         }
+      gen("OBJECT");
       after_object();
       break;
     default: //Sends syntax error if unexpexted lexical found in parsing
@@ -778,11 +768,8 @@ void after_subject() {
   switch(next_token()) {
     case WORD2:
       verb();
-
-      //Calls getEword and gen for translation output.
       getEword();
       gen("ACTION");
-
       verb_tense();
       gen("TENSE");
       if (match(PERIOD))
@@ -823,13 +810,12 @@ void s() {
   noun();
   //Calls getEword and gen for translation output.
   getEword();
-  gen("ACTOR");
-
   if (match(SUBJECT))
     if (choice == "skip") {
       choice = ""; //So it doesn't loop back when matching next word  
       match(SUBJECT);
     }
+  gen("ACTOR");
   after_subject();
   translation << endl;
 }
