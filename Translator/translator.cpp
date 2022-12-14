@@ -333,7 +333,7 @@ vector<vector<string> > lexicon;
 //    getEword() - using the current saved_lexeme, look up the English word
 //                 in Lexicon if it is there -- save the result   
 //                 in saved_E_word
-//  Done by: Raymond Quach
+//  Done by: Arnold Bermejo
 void getEword() {
   //For loop to determine the value of saved_E_word
   for (int i = 0; i < lexicon.size(); i++) {
@@ -667,7 +667,9 @@ void be() {
 }
 
 // Done by: Arnold Bermejo
-// Grammar: <afterObject> ::= verb tense PERIOD | noun dest verb tense PERIOD [*>w<*]
+// Grammar: <afterObject> ::= <verb> #getEword# gen("ACTION") <tense> PERIOD |
+// <noun> #getEword# DESTINATION #gen("TO")# <verb> #getEword# #gen("ACTION")#
+// <tense> gen("TENSE") PERIOD
 void after_object() {
   parserFunct = "afterObject";
   if (tracing) //Have the terminal display processing message if tracing is on
@@ -710,8 +712,10 @@ void after_object() {
   }
 }
 
-// Done by: Arnold Bermejo
-// Grammar: <afterNoun> ::= be PERIOD | DESTINATION verb tense PERIOD | object afterObject [*>w<*]
+// Done by: Arnold Bermejo, Raymond Quach
+// Grammar: <afterNoun> ::= <be> #gen("DESCRIPTION")# #gen("TENSE")# PERIOD |
+// DESTINATION #gen("TO")# <verb> #gen("ACTION")# <tense> #gen("TENSE")# PERIOD |
+// OBJECT #gen("OBJECT")# <afterObject>
 void after_noun() {
   parserFunct = "afterNoun";
   if (tracing) //Have the terminal display processing message if tracing is on
@@ -759,8 +763,9 @@ void after_noun() {
   }
 }
 
-// Done by: Arnold Bermejo
-// Grammar: <afterSubject> ::= verb tense PERIOD | noun afterNoun [*>w<*]
+// Done by: Arnold Bermejo, Luis Zamora
+// Grammar: <afterSubject> ::= <verb> #getEword# #gen("ACTION")# <tense>
+// #gen("TENSE")# PERIOD | <noun> #getEword# <afterNoun>
 void after_subject() {
   parserFunct = "afterSubject";
   if (tracing) //Have the terminal display processing message if tracing is on
@@ -790,7 +795,7 @@ void after_subject() {
 }
 
 // Done by: Luis Zamora
-// Grammar: <s> ::= [CONNECTOR] noun SUBJECT after_subject [*>w<*]
+// Grammar: <s> ::= [CONNECTOR #getEword# #gen("CONNECTOR")#] <noun> SUBJECT <after_subject>
 void s() {
   if (tracing) //Have the terminal display processing message if tracing is on
     cout << "Processing <s>" << endl;
