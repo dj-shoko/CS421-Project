@@ -334,12 +334,12 @@ void syntax_error1(tokentype expected, string saved_lexeme)
 
   //To create or clear the error log if one isn't created already
   if (!log_create) {
-    error.open("error.txt", ofstream::out | ofstream::trunc);
-    error.close();
+    error.open("errors.txt", ofstream::out | ofstream::trunc);
+    error.close(); //Closes error log
   }
 
   //Append error log file and add error info into it.
-  error.open("error.txt", ios_base::app);
+  error.open("errors.txt", ios_base::app);
   if (tracing) //Have the terminal display processing message if tracing is on
   error << "SYNTAX ERROR: expected " << tokenName[expected] << " but found "
   << saved_lexeme << " in line " << line_number << "." << endl;
@@ -387,12 +387,12 @@ void syntax_error2(string saved_lexeme, string parserFunct)
 
   //To create or clear the error log if one isn't created already
   if (!log_create) {
-    error.open("error.txt", ofstream::out | ofstream::trunc);
-    error.close();
+    error.open("errors.txt", ofstream::out | ofstream::trunc);
+    error.close(); //Close error log
   }
 
   //Append error log file and add error info into it.
-  error.open("error.txt", ios_base::app);
+  error.open("errors.txt", ios_base::app);
   error << "SYNTAX ERROR: unexpected " << saved_lexeme << " found in "
   << parserFunct << " in line " << line_number << "." << endl;
 
@@ -715,9 +715,11 @@ int main()
   cin >> filename;
   fin.open(filename.c_str());
 
+  //Asks user if they want tracing messages
   cout << "Would you like to enable tracing messages?" <<
   "\nEnter \"yes\" or \"no\": ";
   cin >> choice;
+  //Loops until valid message is entered
   while (choice != "yes" && choice != "no") {
     cout << "Please enter \"yes\" or \"no\": ";
     cin >> choice;
@@ -726,7 +728,7 @@ int main()
   if (choice == "yes")
     tracing = true;
 
-  choice = "";
+  choice = ""; //Sets it back to blank since it's used for other choices...
 
   //calls the <story> to start parsing
   story();
